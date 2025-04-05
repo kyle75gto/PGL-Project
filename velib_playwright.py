@@ -1,4 +1,18 @@
+# ici l'utilité de ce fichier python est simplement d'aller chercher toutes les lignes du tableau en simulant un 
+# scroll de souris car sinon en utilisant justeun script bash, ce n'était pas possible d'accéder aux 1470 lignes
+# du tableau mais uniquement aux 80 premières lignes. Ce code python aide uniquement à récupérer toutes les lignes
+#  mais n'est pas un scrapper, le scrapper est bien le script bash.
+
 from playwright.sync_api import sync_playwright
+import sys
+from datetime import datetime
+
+# Utilise l'argument de ligne de commande, ou timestamp par défaut
+if len(sys.argv) > 1:
+    html_filename = sys.argv[1]
+else:
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    html_filename = f"velib_page_{timestamp}.html"
 
 def extract_rows(page):
     return page.query_selector_all(".odswidget-table__internal-table-row")
@@ -13,10 +27,8 @@ def build_table_html(all_row_htmls):
     table += '</tbody>\n</table>\n</div>'
     return table
 
-MAX_EXPECTED_ROWS = 1471
-
 with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False)
+    browser = p.chromium.launch(headless=True)
     page = browser.new_page()
     page.goto("https://opendata.paris.fr/explore/embed/dataset/velib-disponibilite-en-temps-reel/table/?disjunctive.is_renting&disjunctive.is_installed&disjunctive.is_returning&disjunctive.name&disjunctive.nom_arrondissement_communes")
     page.wait_for_selector(".odswidget-table__internal-table-row")
@@ -25,15 +37,18 @@ with sync_playwright() as p:
 
     seen_rows = set()
     all_row_htmls = []
+    last_total = 0
+    same_count = 0
+    max_same = 5
+    MAX_EXPECTED_ROWS = 1471
 
-    print("Défilement réel avec la souris...")
+    print("Défilement automatique...")
 
-    for _ in range(100):  # 100 scrolls max (on s'arrête avant si complet)
+    for _ in range(100):
         page.mouse.wheel(0, 1000)
         page.wait_for_timeout(500)
 
         current_rows = extract_rows(page)
-
         for row in current_rows:
             html = extract_row_html(row)
             if html not in seen_rows:
@@ -47,9 +62,20 @@ with sync_playwright() as p:
             print("Toutes les lignes ont été récupérées.")
             break
 
+        if current_total == last_total:
+            same_count += 1
+            if same_count >= max_same:
+                print("Fin du chargement automatique (aucune nouvelle ligne).")
+                break
+        else:
+            same_count = 0
+            last_total = current_total
+
     final_html = build_table_html(all_row_htmls)
-    with open("velib_page.html", "w", encoding="utf-8") as f:
+
+    with open(html_filename, "w", encoding="utf-8") as f:
         f.write(final_html)
 
-    print(f"{len(all_row_htmls)} lignes sauvegardées dans velib_page.html")
+    print(f"{len(all_row_htmls)} lignes sauvegardées dans {html_filename}")
     browser.close()
+
