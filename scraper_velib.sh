@@ -1,16 +1,13 @@
-CHROME_PATH="C:\Program Files\Google\Chrome\Application\chrome.exe"
-URL="https://opendata.paris.fr/explore/embed/dataset/velib-disponibilite-en-temps-reel/table/?disjunctive.is_renting&disjunctive.is_installed&disjunctive.is_returning&disjunctive.name&disjunctive.nom_arrondissement_communes"
 HTML_FILE="velib_page.html"
 CSV_FILE="identifiants_velib.csv"
 
-# Utiliser Chrome Headless pour capturer le vrai HTML avec JavaScript exécuté
-"$CHROME_PATH" --headless --disable-gpu --virtual-time-budget=5000 --dump-dom "$URL" > "$HTML_FILE"
+echo " Lancement de la récupération dynamique du HTML Velib"
 
-# Vérifier si le HTML a été récupéré
-if [ ! -s "$HTML_FILE" ]; then
-  echo " ERREUR : HTML vide. Chrome n'a pas récupéré les données."
-  exit 1
-fi
+python velib_playwright.py
+
+#supprime ligne problématique qui a un ID douteux
+
+sed -i '/13118_relais/d' "$HTML_FILE"
 
 # Extraire les identifiants (5 chiffres uniquement)
 
