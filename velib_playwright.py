@@ -42,7 +42,7 @@ with sync_playwright() as p:
     max_same = 5
     MAX_EXPECTED_ROWS = 1471
 
-    print("Défilement automatique...")
+    print("Defilement automatique...")
 
     for _ in range(100):
         page.mouse.wheel(0, 1000)
@@ -56,10 +56,10 @@ with sync_playwright() as p:
                 all_row_htmls.append(html)
 
         current_total = len(all_row_htmls)
-        print(f"Lignes collectées : {current_total}")
+        print(f"Lignes collectees : {current_total}")
 
         if current_total >= MAX_EXPECTED_ROWS:
-            print("Toutes les lignes ont été récupérées.")
+            print("Toutes les lignes ont ete recuperees.")
             break
 
         if current_total == last_total:
@@ -76,6 +76,6 @@ with sync_playwright() as p:
     with open(html_filename, "w", encoding="utf-8") as f:
         f.write(final_html)
 
-    print(f"{len(all_row_htmls)} lignes sauvegardées dans {html_filename}")
+    print(f"{len(all_row_htmls)} lignes sauvegardees dans {html_filename}")
     browser.close()
 
