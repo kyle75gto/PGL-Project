@@ -13,7 +13,7 @@ from datetime import datetime
 station_info = pd.read_excel("Informations stations.xlsx")
 data = {}
 
-folder_path = r"C:\Users\jqygn\Documents\ESILV\A4\S8\0.Adv. Python, Git, Linux for Bl\Project\Datas"
+folder_path = r"Informations stations.xlsx"
 for filename in os.listdir(folder_path):
     file_path = os.path.join(folder_path, filename)
     if os.path.isfile(file_path) and filename.endswith(".xlsx"):
