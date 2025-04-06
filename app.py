@@ -13,15 +13,12 @@ from datetime import datetime
 station_info = pd.read_excel("Informations stations.xlsx")
 data = {}
 
-folder_path = r"C:\Users\jqygn\Documents\ESILV\A4\S8\0.Adv. Python, Git, Linux for Bl\Project\Datas"
+folder_path = r"Datas"
 for filename in os.listdir(folder_path):
     file_path = os.path.join(folder_path, filename)
     if os.path.isfile(file_path) and filename.endswith(".xlsx"):
         filename_without_extension = os.path.splitext(filename)[0]
         data[filename_without_extension] = pd.read_excel(file_path)
-
-# Création des dossiers de sortie
-os.makedirs("generated_gifs", exist_ok=True)
 
 # Paramètres globaux
 communes = sorted(station_info['Nom communes équipées'].unique())
