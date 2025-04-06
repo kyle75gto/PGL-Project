@@ -19,7 +19,7 @@ grep -oP '<span title="\K\d+(?=" dir="auto">)' "$HTML_FILE" | sed -n '4~6p' > ve
 grep -oP '<span title="\K\d+(?=" dir="auto">)' "$HTML_FILE" | sed -n '5~6p' > velos_electriques.txt
 
 # Créer le fichier CSV final
-echo "Identifiant_Station,Bornettes_Libres,Total_Velos_Dispo,Velos_Mecaniques,Velos_Electriques" > "$CSV_FILE"
+echo "Identifiant station,Nombre bornettes libres,Nombre total vélos disponibles,Vélos mécaniques disponibles,Vélos électriques disponibles" > "$CSV_FILE"
 paste -d ',' ids.txt bornettes.txt total_velos.txt velos_mecaniques.txt velos_electriques.txt >> "$CSV_FILE"
 
 # Nettoyage
