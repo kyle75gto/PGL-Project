@@ -34,6 +34,7 @@ max_velos = max(df['Nombre total vélos disponibles'].max() for df in data.value
 
 # Initialisation de l'app
 app = dash.Dash(suppress_callback_exceptions=True)
+server = app.server
 
 app.layout = html.Div([
     html.H1("Carte Interactive des Vélib' à Paris", style={'textAlign': 'center', 'padding': '20px', 'color': 'white'}),
