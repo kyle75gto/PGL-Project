@@ -1,8 +1,8 @@
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
+TIMESTAMP=$(date +"%Y-%m-%d-%H-%M")
 
 # Fichiers avec timestamp
 HTML_FILE="velib_page_$TIMESTAMP.html"
-CSV_FILE="identifiants_velib_$TIMESTAMP.csv"
+CSV_FILE="$TIMESTAMP.csv"
 
 echo " Lancement de la recup du HTML avec Playwright..."
 
@@ -35,7 +35,7 @@ if [ -f "$XLSX_FILE" ]; then
   rm "$CSV_FILE"
   echo "   - XLSX : $XLSX_FILE"
   # Déplacer le fichier XLSX dans le dossier
-  mv "$XLSX_FILE" "Datasets/$XLSX_FILE"
+  mv "$XLSX_FILE" "Datas/$XLSX_FILE"
   echo "   - Fichier déplacé dans Datasets/"
 else
   echo "    Conversion echouee. CSV conserve : $CSV_FILE"

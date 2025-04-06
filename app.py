@@ -42,6 +42,9 @@ app.layout = html.Div([
         dcc.Tab(label='Animation', value='animation-tab',
                 style={'backgroundColor': '#333', 'color': 'white'},
                 selected_style={'backgroundColor': '#555', 'color': 'white'}),
+        dcc.Tab(label='Graph', value='graph-tab',
+                style={'backgroundColor': '#333', 'color': 'white'},
+                selected_style={'backgroundColor': '#555', 'color': 'white'}),
         dcc.Tab(label='Rapport', value='report-tab',
                 style={'backgroundColor': '#333', 'color': 'white'},
                 selected_style={'backgroundColor': '#555', 'color': 'white'}),
@@ -95,6 +98,32 @@ def render_content(tab):
             ], style={'display': 'flex'}),
         ])
 
+    elif tab == 'graph-tab':
+        return html.Div([
+            html.H3("Évolution de la Disponibilité par Station", style={'textAlign': 'center'}),
+            html.Div([
+                html.Div([
+                    html.H4("Choisir une commune"),
+                    dcc.Dropdown(
+                        id='commune-dropdown',
+                        options=[{'label': c, 'value': c} for c in communes],
+                        placeholder="Choisissez une commune",
+                        style={'color': '#000', 'backgroundColor': '#333'}
+                    ),
+                    html.H4("Choisir des stations"),
+                    dcc.Dropdown(
+                        id='station-selector',
+                        multi=True,
+                        placeholder="Choisissez des stations",
+                        style={'color': '#000', 'backgroundColor': '#333'}
+                    )
+                ], style={'width': '30%', 'display': 'inline-block', 'verticalAlign': 'top', 'backgroundColor': '#2c2c2c', 'padding': '20px'}),
+                html.Div([
+                    dcc.Graph(id='station-timeseries', style={'backgroundColor': '#1e1e1e'})
+                ], style={'width': '70%', 'display': 'inline-block'})
+            ])
+        ])
+
     elif tab == 'animation-tab':
         return html.Div([
             html.H3("Évolution Temporelle des Vélibs", style={'textAlign': 'center'}),
@@ -144,6 +173,66 @@ def render_content(tab):
             html.H3("À propos"),
             html.P("Cette application permet de visualiser les stations Vélib' à Paris avec différents filtres.")
         ])
+
+@app.callback(
+    Output('station-selector', 'options'),
+    [Input('commune-dropdown', 'value')]
+)
+def update_station_options(selected_commune):
+    if selected_commune:
+        filtered = station_info[station_info['Nom communes équipées'] == selected_commune]
+        return [{'label': s, 'value': s} for s in sorted(filtered['Nom station'].unique())]
+    return []
+
+@app.callback(
+    Output('station-timeseries', 'figure'),
+    [Input('station-selector', 'value')]
+)
+def update_timeseries(selected_stations):
+    if not selected_stations:
+        # Crée une figure vide avec un message d'information
+        return {
+            "data": [],
+            "layout": go.Layout(
+                title="Veuillez sélectionner une commune et des stations",
+                plot_bgcolor='#1e1e1e',
+                paper_bgcolor='#1e1e1e',
+                font=dict(color='white'),
+                xaxis=dict(showgrid=False, zeroline=False),
+                yaxis=dict(showgrid=False, zeroline=False),
+                annotations=[
+                    dict(
+                        text="Aucune donnée sélectionnée",
+                        xref="paper", yref="paper",
+                        x=0.5, y=0.5,
+                        showarrow=False,
+                        font=dict(size=16, color="white")
+                    )
+                ]
+            )
+        }
+
+    # Crée la figure du graphique lorsque des stations sont sélectionnées
+    fig = go.Figure()
+    for station in sorted(selected_stations):
+        values = []
+        for date in dates:
+            df = pd.merge(data[date], station_info, on='Identifiant station')
+            match = df[df['Nom station'] == station]
+            if not match.empty:
+                values.append(match['Nombre total vélos disponibles'].values[0])
+            else:
+                values.append(None)
+        fig.add_trace(go.Scatter(x=dates, y=values, mode='lines', name=station))
+
+    fig.update_layout(title='Évolution de la disponibilité des vélos',
+                      xaxis_title='Date',
+                      yaxis_title='Vélos disponibles',
+                      plot_bgcolor='#1e1e1e',
+                      paper_bgcolor='#1e1e1e',
+                      font=dict(color='white'))
+
+    return fig
 
 @app.callback(
     Output('velib-map', 'figure'),
@@ -340,7 +429,6 @@ def generate_daily_gif(n_clicks, selected_date):
                 bgcolor="black"
             )
 
-
             img_path = os.path.join(temp_img_dir, f"{i:03d}.png")
             fig.write_image(img_path)
             images.append(imageio.imread(img_path))
@@ -353,7 +441,6 @@ def generate_daily_gif(n_clicks, selected_date):
         return dcc.send_file(gif_path), f"✅ GIF généré : {gif_filename}"
 
     return None, ""
-
 
 if __name__ == '__main__':
     app.run(debug=True)
