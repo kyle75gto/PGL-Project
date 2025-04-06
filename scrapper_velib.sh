@@ -1,8 +1,8 @@
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M")
+TIMESTAMP=$(date +"%Y-%m-%d-%H-%M")
 
 # Fichiers avec timestamp
 HTML_FILE="velib_page_$TIMESTAMP.html"
-CSV_FILE="identifiants_velib_$TIMESTAMP.csv"
+CSV_FILE="$TIMESTAMP.csv"
 
 echo " Lancement de la recup du HTML avec Playwright..."
 
