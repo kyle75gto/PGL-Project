@@ -1,4 +1,4 @@
-TIMESTAMP=$(date +"%Y-%m-%d-%H-%M")
+TIMESTAMP=$(TZ="Europe/Paris" date +"%Y-%m-%d-%H-%M")
 
 # Fichiers avec timestamp
 HTML_FILE="velib_page_$TIMESTAMP.html"
