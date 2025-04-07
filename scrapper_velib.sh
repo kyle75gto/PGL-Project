@@ -6,7 +6,7 @@ CSV_FILE="$TIMESTAMP.csv"
 
 echo " Lancement de la recup du HTML avec Playwright..."
 
-python velib_playwright.py "$HTML_FILE"
+python3 velib_playwright.py "$HTML_FILE"
 
 # Supprimer la ligne problématique qui n' a pas le même format
 sed -i '/13118_relais/d' "$HTML_FILE"
