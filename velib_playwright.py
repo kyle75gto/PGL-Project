@@ -11,8 +11,8 @@ from datetime import datetime
 if len(sys.argv) > 1:
     html_filename = sys.argv[1]
 else:
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    html_filename = f"velib_page_{timestamp}.html"
+    timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
+    html_filename = f"{timestamp}.html"
 
 def extract_rows(page):
     return page.query_selector_all(".odswidget-table__internal-table-row")

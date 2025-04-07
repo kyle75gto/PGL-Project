@@ -27,7 +27,7 @@ rm ids.txt bornettes.txt total_velos.txt velos_mecaniques.txt velos_electriques.
 rm "$HTML_FILE"
 
 # Conversion CSV → XLSX avec Python
-python csv_to_xlsx.py "$CSV_FILE"
+python3 csv_to_xlsx.py "$CSV_FILE"
 XLSX_FILE="${CSV_FILE%.csv}.xlsx"
 
 # Supprimer le CSV si conversion réussie
