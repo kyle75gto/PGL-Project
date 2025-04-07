@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Script shell secondaire
-/home/ec2-user/PGL-Project/scrapper_velib.sh
+cd "/home/ubuntu/PGL-Project"
 
 # Script Python
-python3 /home/ec2-user/PGL-Project/app.py
+python3 app.py &
+
+./scrapper_velib.sh

@@ -11,6 +11,8 @@ from datetime import datetime
 
 # Chargement des données
 station_info = pd.read_excel("Informations stations.xlsx")
+station_info['Identifiant station'] = station_info['Identifiant station'].astype(int)
+
 data = {}
 
 folder_path = r"Datas"
@@ -80,10 +82,16 @@ def render_content(tab):
                                  style={'color': '#000', 'backgroundColor': '#333'}),
 
                     html.H4("Date"),
-                    dcc.Slider(id='date-slider',
-                               min=0, max=len(dates)-1, step=1,
-                               marks={i: dates[i] for i in range(len(dates))},
-                               value=0),
+                    dcc.Slider(
+                    id='date-slider',
+                    min=0,
+                    max=len(dates)-1,
+                    step=1,
+                    value=0,
+                    marks={i: date.split('-', maxsplit=1)[1] for i, date in enumerate(dates)},
+                    tooltip={'always_visible': False, 'placement': 'bottom', 'template': "{value}"}),
+
+                    html.Div(id='tooltip-content'),
 
                     html.H4("Vélos disponibles"),
                     dcc.RangeSlider(id='velo-range-slider',
@@ -173,6 +181,13 @@ def render_content(tab):
             html.H3("À propos"),
             html.P("Cette application permet de visualiser les stations Vélib' à Paris avec différents filtres.")
         ])
+
+@app.callback(
+    Output('tooltip-content', 'children'),
+    Input('date-slider', 'value')
+)
+def update_tooltip(value):
+    return f"Date: {dates[value]}"
 
 @app.callback(
     Output('station-selector', 'options'),
