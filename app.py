@@ -29,6 +29,8 @@ min_date, max_date = dates[0], dates[-1]
 # Extraire les dates journalières au format "YYYY-MM-DD"
 daily_dates = sorted(set(d[:10] for d in dates))
 
+reduced_dates = dates[::6]
+
 max_velos = 70
 
 # Initialisation de l'app
@@ -88,7 +90,7 @@ def render_content(tab):
                     max=len(dates)-1,
                     step=1,
                     value=0,
-                    marks={},
+                    marks=None,
                     tooltip={'always_visible': False, 'placement': 'bottom', 'template': "{value}"}),
 
                     html.Div(id='tooltip-content'),
@@ -143,9 +145,9 @@ def render_content(tab):
             ], style={'textAlign': 'center'}),
 
             dcc.Slider(id='animation-slider',
-                       min=0, max=len(dates)-1, step=1,
+                       min=0, max=len(reduced_dates)-1, step=1,
                        value=0,
-                       marks={i: dates[i] for i in range(len(dates))},
+                       marks=None,
                        tooltip={"placement": "bottom"}),
 
             html.Div(id='current-date-display', style={'textAlign': 'center', 'marginTop': '10px'}),
@@ -173,7 +175,7 @@ def render_content(tab):
                         style={'backgroundColor': '#5a5a5a', 'color': 'white', 'padding': '10px 20px'}),
 
             dcc.Download(id='download-gif'),
-            html.P("Le GIF peut mettre jusqu'à une minute pour se générer"),
+            html.P("Le GIF peut mettre plusieurs minutes pour se générer. Générer le rapport du 07/04 pour une génération rapide"),
             html.Div(id='gif-status', style={'textAlign': 'center', 'marginTop': '20px'})
         ])
 
@@ -319,7 +321,7 @@ def control_animation(play_clicks, pause_clicks, is_disabled):
     [State('animation-slider', 'value')]
 )
 def update_slider_on_interval(n_intervals, current_value):
-    return 0 if current_value + 1 >= len(dates) else current_value + 1
+    return 0 if current_value + 1 >= len(reduced_dates) else current_value + 1
 
 @app.callback(
     [Output('animation-map', 'figure'),
@@ -327,7 +329,7 @@ def update_slider_on_interval(n_intervals, current_value):
     [Input('animation-slider', 'value')]
 )
 def update_map_on_slider(index):
-    selected_date = dates[index]
+    selected_date = reduced_dates[index]
     df = pd.merge(data[selected_date], station_info, on='Identifiant station')
 
     fig = go.Figure(go.Scattermapbox(
@@ -376,7 +378,9 @@ def generate_daily_gif(n_clicks, selected_date):
         selected_snapshots = sorted([d for d in dates if d.startswith(selected_date)])
         if not selected_snapshots:
             return None, f"⚠️ Aucune donnée trouvée pour le {selected_date}"
-
+        
+        selected_snapshots = selected_snapshots[::6]
+        
         images = []
         for i, date in enumerate(selected_snapshots):
             df = pd.merge(data[date], station_info, on='Identifiant station')
