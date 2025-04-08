@@ -29,7 +29,7 @@ min_date, max_date = dates[0], dates[-1]
 # Extraire les dates journalières au format "YYYY-MM-DD"
 daily_dates = sorted(set(d[:10] for d in dates))
 
-max_velos = max(df['Nombre total vélos disponibles'].max() for df in data.values())
+max_velos = 70
 
 # Initialisation de l'app
 app = dash.Dash(suppress_callback_exceptions=True)
