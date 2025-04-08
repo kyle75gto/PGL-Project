@@ -173,6 +173,7 @@ def render_content(tab):
                         style={'backgroundColor': '#5a5a5a', 'color': 'white', 'padding': '10px 20px'}),
 
             dcc.Download(id='download-gif'),
+            html.P("Le GIF peut mettre jusqu'à une minute pour se générer"),
             html.Div(id='gif-status', style={'textAlign': 'center', 'marginTop': '20px'})
         ])
 
@@ -450,7 +451,7 @@ def generate_daily_gif(n_clicks, selected_date):
 
         gif_filename = f"velib_{selected_date}.gif"
         gif_path = os.path.join(gif_output_dir, gif_filename)
-        imageio.mimsave(gif_path, images, format='GIF', fps=1, loop=0)
+        imageio.mimsave(gif_path, images, format='GIF', duration=12, loop=0)
 
         shutil.rmtree(temp_img_dir)
         return dcc.send_file(gif_path), f"✅ GIF généré : {gif_filename}"
