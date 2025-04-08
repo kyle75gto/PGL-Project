@@ -88,7 +88,7 @@ def render_content(tab):
                     max=len(dates)-1,
                     step=1,
                     value=0,
-                    marks={i: date.split('-', maxsplit=1)[1] for i, date in enumerate(dates)},
+                    marks={},
                     tooltip={'always_visible': False, 'placement': 'bottom', 'template': "{value}"}),
 
                     html.Div(id='tooltip-content'),
