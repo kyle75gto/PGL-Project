@@ -241,7 +241,6 @@ def update_timeseries(selected_stations):
                 values.append(match['Nombre total vélos disponibles'].values[0])
             else:
                 values.append(None)
-        values = [x if x < 70 else 70 for x in values]
         fig.add_trace(go.Scatter(x=dates, y=values, mode='lines', name=station))
 
     fig.update_layout(title='Évolution de la disponibilité des vélos',
